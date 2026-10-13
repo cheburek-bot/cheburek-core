@@ -1,4 +1,5 @@
 import os
+import random
 import textwrap
 from pathlib import Path
 
@@ -91,6 +92,15 @@ class MemeGenerator:
         )
 
         return img
+
+    def get_random_image_path(self, guild_id: str) -> str:
+        images_dir = f"./data/{guild_id}/images"
+
+        image_dir = Path(images_dir)
+        image_dir.mkdir(parents=True, exist_ok=True)
+
+        images = os.listdir(images_dir)
+        return f"{images_dir}/{random.choice(images)}"
 
     def get_images_count(self, guild_id: str) -> int:
         images_dir = Path(f"data/{guild_id}/images")
