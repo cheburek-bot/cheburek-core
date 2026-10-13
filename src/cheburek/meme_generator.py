@@ -8,21 +8,19 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
+FONT_TIMES = "assets/fonts/timesnewromanpsmt.ttf"
+FONT_IMPACT = "assets/fonts/impact.ttf"
+
+TEMPLATE_FRESCO = "assets/images/fresco.jpg"
+TEMPLATE_DEMOTIVATOR = "assets/images/demotivator.jpg"
+
 
 class MemeGenerator:
     def create_fresco(self, message: str) -> Image.Image:
-        base_path = resources.files("cheburek.assets")
-        font_resource = base_path / "fonts" / "timesnewromanpsmt.ttf"
-        img_resource = base_path / "images" / "fresco.jpg"
+        font = ImageFont.truetype(FONT_TIMES, 20)
+        tmpl = Image.open(TEMPLATE_FRESCO)
 
-        font_bytes = io.BytesIO(font_resource.read_bytes())
-        font = ImageFont.truetype(font_bytes, 20)
-
-        with as_file(img_resource) as img_path, as_file(font_resource) as font_path:
-            img = Image.open(img_path)
-            img.load()
-
-        draw = ImageDraw.Draw(img)
+        draw = ImageDraw.Draw(tmpl)
 
         lines = textwrap.wrap(message, width=30)
         text = "\n".join(lines)
@@ -37,24 +35,17 @@ class MemeGenerator:
             align="center",
         )
 
-        return img
+        return tmpl
 
     def create_demotivator(self, message: str, image_path: str) -> Image.Image:
-        base_path = resources.files("cheburek.assets")
-        font_resource = base_path / "fonts" / "timesnewromanpsmt.ttf"
-        template_resource = base_path / "images" / "demotivator.jpg"
-
-        font_bytes = io.BytesIO(font_resource.read_bytes())
-        font = ImageFont.truetype(font_bytes, 120)
+        font = ImageFont.truetype(FONT_TIMES, 120)
 
         img = Image.open(image_path)
         img = img.resize((1576, 1479))
 
-        with as_file(template_resource) as template_path:
-            template = Image.open(template_path)
-            template.paste(img, (134, 142))
+        tmpl = Image.open(TEMPLATE_DEMOTIVATOR)
 
-        draw = ImageDraw.Draw(template)
+        draw = ImageDraw.Draw(tmpl)
 
         lines = textwrap.wrap(message, width=30)
         text = "\n".join(lines)
@@ -69,14 +60,10 @@ class MemeGenerator:
             align="center",
         )
 
-        return template
+        return tmpl
 
     def create_meme(self, message1: str, message2: str, image_path: str) -> Image.Image:
-        base_path = resources.files("cheburek.assets")
-        font_resource = base_path / "fonts" / "impact.ttf"
-
-        font_bytes = io.BytesIO(font_resource.read_bytes())
-        font = ImageFont.truetype(font_bytes, 36)
+        font = ImageFont.truetype(FONT_IMPACT, 36)
 
         img = Image.open(image_path)
         img = img.resize((640, 480), Image.Resampling.LANCZOS)
