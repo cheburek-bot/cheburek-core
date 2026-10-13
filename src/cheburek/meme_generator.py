@@ -1,4 +1,6 @@
+import os
 import textwrap
+from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -89,3 +91,9 @@ class MemeGenerator:
         )
 
         return img
+
+    def get_images_count(self, guild_id: str) -> int:
+        images_dir = Path(f"data/{guild_id}/images")
+        images_dir.mkdir(parents=True, exist_ok=True)
+
+        return len(os.listdir(images_dir))
