@@ -1,3 +1,4 @@
+import io
 import os
 import random
 import textwrap
@@ -11,108 +12,107 @@ from PIL import Image, ImageDraw, ImageFont
 class MemeGenerator:
     def create_fresco(self, message: str) -> Image.Image:
         base_path = resources.files("cheburek.assets")
-        img_resource = base_path / "images" / "fresco.jpg"
         font_resource = base_path / "fonts" / "timesnewromanpsmt.ttf"
+        img_resource = base_path / "images" / "fresco.jpg"
+
+        font_bytes = io.BytesIO(font_resource.read_bytes())
+        font = ImageFont.truetype(font_bytes, 20)
 
         with as_file(img_resource) as img_path, as_file(font_resource) as font_path:
             img = Image.open(img_path)
             img.load()
 
-            font = ImageFont.truetype(font_path, 20)
+        draw = ImageDraw.Draw(img)
 
-            draw = ImageDraw.Draw(img)
+        lines = textwrap.wrap(message, width=30)
+        text = "\n".join(lines)
 
-            lines = textwrap.wrap(message, width=30)
-            text = "\n".join(lines)
+        draw.multiline_text(
+            (165, 150),
+            text,
+            fill="black",
+            font=font,
+            spacing=4,
+            anchor="md",
+            align="center",
+        )
 
-            draw.multiline_text(
-                (165, 150),
-                text,
-                fill="black",
-                font=font,
-                spacing=4,
-                anchor="md",
-                align="center",
-            )
-
-            return img
+        return img
 
     def create_demotivator(self, message: str, image_path: str) -> Image.Image:
         base_path = resources.files("cheburek.assets")
-        template_resource = base_path / "images" / "demotivator.jpg"
         font_resource = base_path / "fonts" / "timesnewromanpsmt.ttf"
+        template_resource = base_path / "images" / "demotivator.jpg"
 
-        with (
-            as_file(template_resource) as template_path,
-            as_file(font_resource) as font_path,
-        ):
-            font = ImageFont.truetype(font_path, 120)
+        font_bytes = io.BytesIO(font_resource.read_bytes())
+        font = ImageFont.truetype(font_bytes, 120)
 
-            img = Image.open(image_path)
-            img = img.resize((1576, 1479))
+        img = Image.open(image_path)
+        img = img.resize((1576, 1479))
 
+        with as_file(template_resource) as template_path:
             template = Image.open(template_path)
             template.paste(img, (134, 142))
 
-            draw = ImageDraw.Draw(template)
+        draw = ImageDraw.Draw(template)
 
-            lines = textwrap.wrap(message, width=30)
-            text = "\n".join(lines)
+        lines = textwrap.wrap(message, width=30)
+        text = "\n".join(lines)
 
-            draw.multiline_text(
-                (925, 1800),
-                text,
-                fill="white",
-                font=font,
-                spacing=4,
-                anchor="ms",
-                align="center",
-            )
+        draw.multiline_text(
+            (925, 1800),
+            text,
+            fill="white",
+            font=font,
+            spacing=4,
+            anchor="ms",
+            align="center",
+        )
 
-            return template
+        return template
 
     def create_meme(self, message1: str, message2: str, image_path: str) -> Image.Image:
         base_path = resources.files("cheburek.assets")
         font_resource = base_path / "fonts" / "impact.ttf"
 
-        with as_file(font_resource) as font_path:
-            font = ImageFont.truetype(font_path, 36)
+        font_bytes = io.BytesIO(font_resource.read_bytes())
+        font = ImageFont.truetype(font_bytes, 36)
 
-            img = Image.open(image_path)
-            img = img.resize((640, 480), Image.Resampling.LANCZOS)
-            draw = ImageDraw.Draw(img)
+        img = Image.open(image_path)
+        img = img.resize((640, 480), Image.Resampling.LANCZOS)
+        draw = ImageDraw.Draw(img)
 
-            lines1 = textwrap.wrap(message1, width=30)
-            lines2 = textwrap.wrap(message2, width=30)
+        lines1 = textwrap.wrap(message1, width=30)
+        lines2 = textwrap.wrap(message2, width=30)
 
-            text1 = "\n".join(lines1)
-            text2 = "\n".join(lines2)
+        text1 = "\n".join(lines1)
+        text2 = "\n".join(lines2)
 
-            draw.multiline_text(
-                (img.width / 2, 50),
-                text1,
-                fill="white",
-                font=font,
-                spacing=4,
-                anchor="ms",
-                align="center",
-                stroke_width=5,
-                stroke_fill="black",
-            )
+        draw.multiline_text(
+            (img.width / 2, 50),
+            text1,
+            fill="white",
+            font=font,
+            spacing=4,
+            anchor="ms",
+            align="center",
+            stroke_width=5,
+            stroke_fill="black",
+        )
 
-            draw.multiline_text(
-                (img.width / 2, img.height - 20),
-                text2,
-                fill="white",
-                font=font,
-                spacing=4,
-                anchor="md",
-                align="center",
-                stroke_width=5,
-                stroke_fill="black",
-            )
+        draw.multiline_text(
+            (img.width / 2, img.height - 20),
+            text2,
+            fill="white",
+            font=font,
+            spacing=4,
+            anchor="md",
+            align="center",
+            stroke_width=5,
+            stroke_fill="black",
+        )
 
-            return img
+        return img
 
     def get_random_image_path(self, guild_id: str) -> str:
         images_dir = f"./data/{guild_id}/images"
