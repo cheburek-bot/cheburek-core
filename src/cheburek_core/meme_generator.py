@@ -44,6 +44,7 @@ class MemeGenerator:
         img = img.resize((1576, 1479))
 
         tmpl = Image.open(TEMPLATE_DEMOTIVATOR)
+        tmpl.paste(img, (134, 142))
 
         draw = ImageDraw.Draw(tmpl)
 
