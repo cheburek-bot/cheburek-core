@@ -54,7 +54,7 @@ class AnimationGenerator:
         out = ffmpeg.output(video, audio, output_path, vcodec="libx264", acodec="aac")
         out = out.global_args("-map", "0:a?")
 
-        out.run(overwrite_output=True, quiet=True)
+        out.run(overwrite_output=True)
 
     def get_random_animation(self, guild_id: str) -> str:
         gifs_dir = f"./data/{guild_id}/gifs"
