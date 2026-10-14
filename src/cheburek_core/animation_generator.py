@@ -15,12 +15,18 @@ class AnimationGenerator:
         lines1 = "\n".join(textwrap.wrap(message1, width=30))
         lines2 = "\n".join(textwrap.wrap(message2, width=30))
 
+        probe = ffmpeg.probe(animation)
+        has_audio = any(
+            stream.get("codec_type") == "audio" for stream in probe.get("streams", [])
+        )
+
         in_stream = ffmpeg.input(animation)
         video = in_stream.video
-        audio = in_stream.audio
 
+        # Apply scaling
         video = ffmpeg.filter(video, "scale", 640, 480, flags="lanczos")
 
+        # Apply Top Text
         video = ffmpeg.filter(
             video,
             "drawtext",
@@ -36,6 +42,7 @@ class AnimationGenerator:
             text_align="M",
         )
 
+        # Apply Bottom Text
         video = ffmpeg.filter(
             video,
             "drawtext",
@@ -51,8 +58,13 @@ class AnimationGenerator:
             text_align="M",
         )
 
-        out = ffmpeg.output(video, audio, output_path, vcodec="libx264", acodec="aac")
-        out = out.global_args("-map", "0:a?")
+        if has_audio:
+            audio = in_stream.audio
+            out = ffmpeg.output(
+                video, audio, output_path, vcodec="libx264", acodec="aac"
+            )
+        else:
+            out = ffmpeg.output(video, output_path, vcodec="libx264")
 
         out.run(overwrite_output=True)
 
