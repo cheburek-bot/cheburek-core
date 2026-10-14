@@ -1,12 +1,11 @@
 import os
 import random
-import subprocess
 import textwrap
 from pathlib import Path
 
 import ffmpeg
 
-FONT_IMPACT = "assets\\/fonts\\/impact.ttf"
+FONT_IMPACT = "assets/fonts/impact.ttf"
 
 
 class AnimationGenerator:
