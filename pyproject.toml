@@ -5,6 +5,7 @@ description = "A core library for the Cheburek text generation bot."
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "ffmpeg-python>=0.2.0",
     "pillow>=12.3.0",
 ]
 
