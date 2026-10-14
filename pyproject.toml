@@ -1,6 +1,6 @@
 [project]
 name = "cheburek-core"
-version = "1.0.0"
+version = "1.0.1"
 description = "A core library for the Cheburek text generation bot."
 readme = "README.md"
 requires-python = ">=3.14"
