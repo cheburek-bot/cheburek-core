@@ -4,8 +4,9 @@ import random
 
 
 class Chain:
-    def __init__(self) -> None:
+    def __init__(self, base_path: str = "data") -> None:
         self.chains: dict[str, dict[str, dict[str, int]]] = {}
+        self.base_path = base_path
 
     def get_chain(self, guild_id: str) -> dict[str, dict[str, int]]:
         if guild_id not in self.chains:
@@ -92,14 +93,13 @@ class Chain:
         return sum(len(inner) for inner in chain.values())
 
     def save(self, guild_id: str, chain: dict[str, dict[str, int]]) -> None:
-        path = f"data/{guild_id}/words.json"
+        path = f"{self.base_path}/{guild_id}/words.json"
         os.makedirs(os.path.dirname(path), exist_ok=True)
-
-        with open(f"data/{guild_id}/words.json", "w", encoding="utf8") as f:
+        with open(path, "w", encoding="utf8") as f:
             json.dump(chain, f, indent=2, ensure_ascii=False)
 
     def load(self, guild_id: str) -> None:
-        path = f"data/{guild_id}/words.json"
+        path = f"{self.base_path}/{guild_id}/words.json"
 
         if not os.path.isfile(path):
             os.makedirs(os.path.dirname(path), exist_ok=True)
