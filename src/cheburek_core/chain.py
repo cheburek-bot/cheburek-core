@@ -4,9 +4,10 @@ import random
 
 
 class Chain:
-    def __init__(self, base_path: str = "data") -> None:
+    def __init__(self, base_path: str = "data", start_word_type: str = "freq") -> None:
         self.chains: dict[str, dict[str, dict[str, int]]] = {}
         self.base_path = base_path
+        self.start_word_type = start_word_type
 
     def get_chain(self, guild_id: str) -> dict[str, dict[str, int]]:
         if guild_id not in self.chains:
@@ -38,9 +39,7 @@ class Chain:
 
         self.save(guild_id, chain)
 
-    def generate_message(
-        self, max_length: int, guild_id: str, start_word_type: str = "freq"
-    ) -> str:
+    def generate_message(self, max_length: int, guild_id: str) -> str:
         self.load(guild_id)
         chain = self.get_chain(guild_id)
 
@@ -51,13 +50,13 @@ class Chain:
         if not start_choices:
             raise ValueError("The word chain is empty")
 
-        if start_word_type == "freq":
+        if self.start_word_type == "freq":
             first_word = random.choices(
                 list(start_choices.keys()),
                 weights=list(start_choices.values()),
                 k=1,
             )[0]
-        elif start_word_type == "random":
+        elif self.start_word_type == "random":
             words = list(chain.keys())
             words.remove("__START__")
             first_word = random.choice(words)
