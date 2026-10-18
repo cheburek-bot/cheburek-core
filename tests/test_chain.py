@@ -19,3 +19,8 @@ def test_word_processing(chain: Chain):
     chain.process_words(["hello", "world"], GUILD_ID)
     assert chain.get_words_count(GUILD_ID) == 2
     assert chain.get_links_count(GUILD_ID) == 3
+
+
+def test_generation_length(chain: Chain):
+    chain.process_words(["hello", "world"], GUILD_ID)
+    assert len(chain.generate_message(2, GUILD_ID).split(" ")) == 2

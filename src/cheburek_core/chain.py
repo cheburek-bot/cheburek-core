@@ -40,56 +40,59 @@ class Chain:
 
     def generate_message(self, max_length: int, guild_id: str) -> str:
         self.load(guild_id)
-
         chain = self.get_chain(guild_id)
 
-        if not chain["__START__"]:
-            raise Exception("The word chain is empty")
+        if max_length < 1:
+            raise ValueError("max_length must be at least 1")
 
-        START_WORD_TYPE = os.environ["START_WORD_TYPE"]
+        start_choices = chain.get("__START__", {})
+        if not start_choices:
+            raise ValueError("The word chain is empty")
 
-        if START_WORD_TYPE == "freq":
-            start_words = list(chain["__START__"].keys())
-            weights = list(chain["__START__"].values())
-            first_word = random.choices(start_words, weights, k=1)[0]
-        elif START_WORD_TYPE == "random":
-            words = list(chain.keys())
-            words.remove("__START__")
-            first_word = random.choice(words)
-        else:
-            raise Exception("START_WORD_TYPE must be either freq or random")
-
+        first_word = random.choices(
+            list(start_choices.keys()),
+            weights=list(start_choices.values()),
+            k=1,
+        )[0]
         message = [first_word]
 
-        i = 0
+        max_steps = 100
 
-        while len(message) <= max_length:
-            current_word = message[i]
+        for _ in range(max_steps):
+            current_word = message[-1]
+            next_choices = chain.get(current_word, {})
 
-            next_words = list(chain[current_word].keys())
-            weights = list(chain[current_word].values())
-            next_word = random.choices(next_words, weights, k=1)[0]
+            if not next_choices:
+                break
 
-            if next_word == "__END__":
+            next_word = random.choices(
+                list(next_choices),
+                weights=list(next_choices.values()),
+                k=1,
+            )[0]
+
+            if next_word == "__END__" or next_word in message:
                 break
 
             message.append(next_word)
-            i += 1
+        else:
+            raise RuntimeError(f"Generation exceeded {max_steps} steps")
+
+        if len(message) > max_length:
+            left = (max_length + 1) // 2
+            right = max_length // 2
+            message = message[:left] + (message[-right:] if right else [])
 
         return " ".join(message)
 
     def get_words_count(self, guild_id: str) -> int:
         self.load(guild_id)
-
         chain = self.get_chain(guild_id)
-
         return len(chain) - 1
 
     def get_links_count(self, guild_id: str) -> int:
         self.load(guild_id)
-
         chain = self.get_chain(guild_id)
-
         return sum(len(inner) for inner in chain.values())
 
     def save(self, guild_id: str, chain: dict[str, dict[str, int]]) -> None:
