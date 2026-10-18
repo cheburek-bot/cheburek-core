@@ -38,7 +38,9 @@ class Chain:
 
         self.save(guild_id, chain)
 
-    def generate_message(self, max_length: int, guild_id: str) -> str:
+    def generate_message(
+        self, max_length: int, guild_id: str, start_word_type: str = "freq"
+    ) -> str:
         self.load(guild_id)
         chain = self.get_chain(guild_id)
 
@@ -49,13 +51,20 @@ class Chain:
         if not start_choices:
             raise ValueError("The word chain is empty")
 
-        first_word = random.choices(
-            list(start_choices.keys()),
-            weights=list(start_choices.values()),
-            k=1,
-        )[0]
-        message = [first_word]
+        if start_word_type == "freq":
+            first_word = random.choices(
+                list(start_choices.keys()),
+                weights=list(start_choices.values()),
+                k=1,
+            )[0]
+        elif start_word_type == "random":
+            words = list(chain.keys())
+            words.remove("__START__")
+            first_word = random.choice(words)
+        else:
+            raise ValueError("start_word_type must be either freq or random")
 
+        message = [first_word]
         max_steps = 100
 
         for _ in range(max_steps):
