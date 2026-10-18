@@ -21,6 +21,10 @@ def test_word_processing(chain: Chain):
     assert chain.get_links_count(GUILD_ID) == 3
 
 
-def test_generation_length(chain: Chain):
-    chain.process_words(["hello", "world"], GUILD_ID)
-    assert len(chain.generate_message(2, GUILD_ID).split(" ")) == 2
+def test_freq_generation(chain: Chain):
+    chain.process_words(["hello", "beautiful", "testing", "world"], GUILD_ID)
+    chain.start_word_type = "freq"
+    message = chain.generate_message(2, GUILD_ID).split(" ")
+    assert len(message) == 2
+    assert message[0] == "hello"
+    assert message[1] == "world"
