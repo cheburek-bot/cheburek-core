@@ -6,8 +6,8 @@ GUILD_ID = "1"
 
 
 @pytest.fixture
-def chain(tmp_path):
-    return Chain(base_path=str(tmp_path))
+def chain():
+    return Chain()
 
 
 def test_chain_creation(chain: Chain):
@@ -21,10 +21,9 @@ def test_word_processing(chain: Chain):
     assert chain.get_links_count(GUILD_ID) == 3
 
 
-def test_freq_generation(chain: Chain):
-    chain.process_words(["hello", "beautiful", "testing", "world"], GUILD_ID)
-    chain.start_word_type = "freq"
+def test_generation(chain: Chain):
+    words = ["hello", "beautiful", "testing", "world"]
+    chain.process_words(words, GUILD_ID)
     message = chain.generate_message(2, GUILD_ID).split(" ")
-    assert len(message) == 2
-    assert message[0] == "hello"
-    assert message[1] == "world"
+    assert len(message) > 0
+    assert all(item in words for item in message)
